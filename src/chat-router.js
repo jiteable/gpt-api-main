@@ -9,6 +9,13 @@ const openai = new OpenAI({
 })
 
 router.post('/api/gpt/chat', async (ctx, next) => {
+  // 简单的密钥
+  const authToken = ctx.get('x-auth-token') || '';
+  if (!authToken.trim() || authToken !== process.env.AUTH_TOKEN) {
+    ctx.body = 'invalid token';
+    return;
+  }
+
   const body = ctx.request.body;
 
   const gptStream = await openai.chat.completions.create({
@@ -22,10 +29,10 @@ router.post('/api/gpt/chat', async (ctx, next) => {
   ctx.set('Content-Type', 'text/event-stream'); // 'text/event-stream' 标识 SSE 即 Server-Sent Events
 
   for await (const chunk of gptStream) {
-    ctx.response.write(`data: ${JSON.stringify(chunk)}\n\n`) // 格式必须是 `data: xxx\n\n` ！！！
+    ctx.res.write(`data: ${JSON.stringify(chunk)}\n\n`)// 格式必须是 `data: xxx\n\n` ！！！
   }
 
-  ctx.request.on('close', () => {
+  ctx.req.on('close', () => {
     console.log('req close...')
   })
 });
