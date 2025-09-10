@@ -23,6 +23,11 @@ router.get('/api/gpt/chat', async (ctx, next) => {
   const decodeOptionStr = decodeURIComponent(optionStr)
   const option = JSON.parse(decodeOptionStr)
 
+  if (!option.messages) {
+    ctx.body = 'invalid option: messages required'
+    return
+  }
+
   // request GPT API
   const gptStream = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
@@ -36,7 +41,13 @@ router.get('/api/gpt/chat', async (ctx, next) => {
 
   for await (const chunk of gptStream) {
     ctx.res.write(`data: ${JSON.stringify(chunk)}\n\n`) // 格式必须是 `data: xxx\n\n` ！！！
+
+    if (chunk.choices[0].delta.content == null) {
+      ctx.res.end(`data: [DONE]`)
+      break
+    }
   }
+
 
   ctx.req.on('close', () => {
     console.log('req close...')
