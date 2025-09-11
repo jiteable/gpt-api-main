@@ -2,6 +2,7 @@ const Koa = require('koa')
 const cors = require('@koa/cors')
 const chatRouter = require('./chat-router')
 require('dotenv').config()
+const { connect } = require('./db/client')
 
 const app = new Koa()
 
@@ -30,5 +31,8 @@ app.use(async (ctx) => {
   ctx.body = 'chat API proxy'
 })
 
-const port = parseInt(process.env.PORT, 10) || 3002
+// 连接数据库
+connect()
+
+const port = 3002
 app.listen(port)
