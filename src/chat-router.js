@@ -1,12 +1,7 @@
-const OpenAI = require('openai')
 const Router = require('koa-router')
-require('dotenv').config()
+const { getOpenAIInstance } = require('./lib/openai')
 
 const router = new Router()
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
 
 router.get('/api/gpt/chat', async (ctx, next) => {
   ctx.status = 200
@@ -51,11 +46,15 @@ router.get('/api/gpt/chat', async (ctx, next) => {
   }
 
   try {
+    // get openai instance
+    const { openai, key } = getOpenAIInstance()
+    console.log('cur openai key: ', `${key.slice(0, 15)}***}`)
+
     // request GPT API
     gptStream = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       // messages: [{ role: 'user', content: 'xxx' }],
-      // max_tokens: 100,
+      max_tokens: 600, // 默认
       stream: true, // stream
       stream_options: { include_usage: true },
       ...option,
