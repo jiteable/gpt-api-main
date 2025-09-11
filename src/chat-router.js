@@ -60,7 +60,7 @@ router.get('/api/gpt/chat', async (ctx, next) => {
   try {
     // get openai instance
     gptStream = await instance.openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: instance.model,
       // messages: [{ role: 'user', content: 'xxx' }],
       max_tokens: 600, // 默认
       stream: true, // stream
@@ -102,7 +102,7 @@ router.get('/api/gpt/chat', async (ctx, next) => {
       ctx.res.write(`data: [DONE]\n\n`) // 格式必须是 `data: xxx\n\n`
     }
 
-    if (choices.length > 0) {
+    if (choices.length === 0 || usage != null) {
       const content = chunk.choices[0].delta.content
       console.log('content: ', content)
       if (content != null) {

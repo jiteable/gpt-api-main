@@ -2,16 +2,23 @@ const OpenAI = require('openai')
 require('dotenv').config()
 const { sendEmail } = require('./mailer')
 
-const apiKey1 = process.env.OPENAI_API_KEY1
+// instance3 - deepSeek
+const apiKey1 = process.env.DEEP_SEEK_API_KEY
 const instance1 = {
-  openai: new OpenAI({ apiKey: apiKey1 }),
+  openai: new OpenAI({ apiKey: apiKey1, baseURL: 'https://api.deepseek.com' }),
+  model: 'deepseek-chat',
   key: apiKey1,
   isError: false,
 }
 
-const apiKey2 = process.env.OPENAI_API_KEY2
+// instance4 - deepBricks
+const apiKey2 = process.env.DEEP_BRICKS_API_KEY
 const instance2 = {
-  openai: new OpenAI({ apiKey: apiKey2 }),
+  openai: new OpenAI({
+    apiKey: apiKey2,
+    baseURL: 'https://api.deepbricks.ai/v1/',
+  }),
+  model: 'gpt-3.5-turbo',
   key: apiKey2,
   isError: false,
 }
